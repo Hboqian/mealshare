@@ -7,6 +7,7 @@ import { createMealEvent } from "@/api/api"
 import { Card, DatePicker, TimePicker, InputNumber } from 'antd';
 import { ClockCircleOutlined, EnvironmentOutlined, TeamOutlined } from '@ant-design/icons';
 import { Checkbox } from "@/components/ui/checkbox"
+import { useNavigate } from "react-router-dom";
 
 // Hardcoded Dining Halls list (IDs should match backend database)
 // Can be fetched from backend, but hardcoded for demo
@@ -27,6 +28,14 @@ export function CreateEvent(){
     const [message, setMessage] = useState(null);
 
     const userId = 1; // Assuming current user is logged in with id=1
+    const navigate = useNavigate();
+
+    const handleEatTogetherChange = (checked) => {
+        setEatTogether(checked);
+        if (checked) {
+            setSpotsTotal(Math.max(2, spotsTotal));
+        }
+    };
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -39,11 +48,10 @@ export function CreateEvent(){
             return;
         }
 
-        // Combine date and time into ISO format
-        const eventDateTime = new Date(`${date}T${time}:00`);
-        const isoString = eventDateTime.toISOString();
-
         try {
+            const eventDateTime = new Date(`${date}T${time}:00`);
+            const isoString = eventDateTime.toISOString();
+            
             const eventData = {
                 host_id: userId,
                 dining_hall_id: selectedHall.id,
@@ -53,6 +61,11 @@ export function CreateEvent(){
             };
             const data = await createMealEvent(eventData);
             setMessage(`Event created successfully (ID: ${data.id})`);
+            
+            // Navigate to home page after successful creation
+            setTimeout(() => {
+                navigate('/');
+            }, 1500);
         } catch (error) {
             setMessage(`Error: ${error.message}`);
         }
@@ -62,31 +75,43 @@ export function CreateEvent(){
         <div className="min-h-screen bg-gray-50">
             <Header />
             <Separator className="mb-0" />
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Card className="shadow-sm">
+            <div className="max-w-4xl mx-auto my-10 p-6">
+                <Card className="w-full">
                     <h1 className="text-2xl font-semibold mb-6">Create Meal Sharing Event</h1>
                     
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Date and Time Section */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
+                        {/* Date, Time, and Eat Together Section */}
+                        <div className="flex items-center gap-4">
+                            <div className="w-1/3">
                                 <label className="block text-sm font-medium mb-2">Event Date</label>
                                 <DatePicker
                                     className="w-full"
                                     size="large"
-                                    onChange={(date) => setDate(date)}
+                                    onChange={(date, dateString) => setDate(dateString)}
                                     required
                                 />
                             </div>
-                            <div>
+                            <div className="w-1/3">
                                 <label className="block text-sm font-medium mb-2">Event Time</label>
                                 <TimePicker
                                     className="w-full"
                                     size="large"
                                     format="HH:mm"
-                                    onChange={(time) => setTime(time)}
+                                    onChange={(time, timeString) => setTime(timeString)}
                                     required
                                 />
+                            </div>
+                            <div className="w-1/3 pt-8">
+                                <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                        id="eat_together"
+                                        checked={eatTogether}
+                                        onCheckedChange={handleEatTogetherChange}
+                                    />
+                                    <label htmlFor="eat_together" className="text-sm font-medium">
+                                        Eat together
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
@@ -96,7 +121,7 @@ export function CreateEvent(){
                                 <EnvironmentOutlined className="mr-2" />
                                 Select Dining Hall
                             </label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 {DINING_HALLS.map(hall => (
                                     <Card
                                         key={hall.id}
@@ -107,39 +132,28 @@ export function CreateEvent(){
                                         }`}
                                         onClick={() => setSelectedHall(hall)}
                                     >
-                                        <h3 className="font-medium">{hall.name}</h3>
-                                        <p className="text-sm text-gray-500">{hall.address}</p>
+                                        <div className="p-3">
+                                            <h3 className="font-medium text-sm">{hall.name}</h3>
+                                            <p className="text-xs text-gray-500">{hall.address}</p>
+                                        </div>
                                     </Card>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Spots and Options */}
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-2">
-                                    <TeamOutlined className="mr-2" />
-                                    Number of Meal Swipes
-                                </label>
-                                <InputNumber
-                                    min={1}
-                                    value={spotsTotal}
-                                    onChange={(value) => setSpotsTotal(value)}
-                                    className="w-32"
-                                    size="large"
-                                />
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    checked={eatTogether}
-                                    onChange={(e) => setEatTogether(e.target.checked)}
-                                    id="eat_together"
-                                />
-                                <label htmlFor="eat_together" className="text-sm">
-                                    Eat together with participants
-                                </label>
-                            </div>
+                        {/* Spots Section */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                <TeamOutlined className="mr-2" />
+                                Number of Meal Swipes
+                            </label>
+                            <InputNumber
+                                min={eatTogether ? 2 : 1}
+                                value={spotsTotal}
+                                onChange={(value) => setSpotsTotal(value)}
+                                className="w-32"
+                                size="large"
+                            />
                         </div>
 
                         {message && (
@@ -151,10 +165,8 @@ export function CreateEvent(){
                         )}
 
                         <Button
-                            type="primary"
-                            htmlType="submit"
-                            size="large"
-                            className="w-full bg-blue-600 hover:bg-blue-700"
+                            type="submit"
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-8 text-xl font-semibold"
                         >
                             Create Event
                         </Button>
