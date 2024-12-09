@@ -8,7 +8,7 @@ const primaryButtonStyles = `${buttonStyles} bg-blue-600`;
 const secondaryButtonStyles = `${buttonStyles} bg-green-600`;
 const dangerButtonStyles = `${buttonStyles} bg-red-600`;
 
-export function EventCard({ eventData, onJoin, onMessage, onLeave, isJoinedPage=false }) {
+export function EventCard({ eventData, onJoin, onMessage, onLeave, isJoinedPage=false, hasJoined=false, isHost=false }) {
     const {
         id,
         event_time,
@@ -23,49 +23,59 @@ export function EventCard({ eventData, onJoin, onMessage, onLeave, isJoinedPage=
     const eventTime = new Date(event_time).toLocaleString();
 
     return (
-        <Card className="my-5 border border-gray-300">
-            {dining_hall?.image_url && (
-                <img src={dining_hall.image_url} className="mx-auto mt-5 w-1/2" alt="Dining Hall" />
-            )}
-            <CardContent>
-                <p className="font-bold text-lg">{dining_hall?.name}</p>
-                <p>{eventTime}</p>
-                <div className="flex mt-2 items-center">
-                    <p className="font-bold grow">
-                        {spots_taken} Spot(s) Taken, {remaining} Remaining
-                    </p>
-                    {host && (
-                        <div className="flex items-center">
-                            <Avatar className='inline-flex'>
-                                <AvatarImage src={host.photo_url} />
-                                <AvatarFallback>{host.first_name?.[0]}{host.last_name?.[0]}</AvatarFallback>
-                            </Avatar>
-                            <div className="mx-3">
-                                <p>{host.first_name}</p>
-                                <p className="font-light">Host</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </CardContent>
-            <CardFooter className="flex space-x-2">
-                {!isJoinedPage ? (
-                    <Button className={primaryButtonStyles} onClick={() => onJoin && onJoin(id)}>
-                        Join
-                    </Button>
-                ) : (
-                    <>
-                        <Button className={secondaryButtonStyles} onClick={() => onMessage && onMessage(id)}>
-                            Message
-                        </Button>
-                        {!is_host && (
-                            <Button className={dangerButtonStyles} onClick={() => onLeave && onLeave(id)}>
-                                Leave
-                            </Button>
-                        )}
-                    </>
+        <Card className="my-3 border border-gray-300">
+            <div className="flex">
+                {dining_hall?.image_url && (
+                    <img src={dining_hall.image_url} className="w-1/3 h-48 object-cover" alt="Dining Hall" />
                 )}
-            </CardFooter>
+                <div className="flex flex-col flex-1">
+                    <CardContent className="p-4">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="font-bold text-lg">{dining_hall?.name}</p>
+                                <p className="text-gray-600">{eventTime}</p>
+                                <p className="font-bold mt-2">
+                                    {spots_taken} Spot(s) Taken, {remaining} Remaining
+                                </p>
+                            </div>
+                            {host && (
+                                <div className="flex items-center">
+                                    <Avatar className='inline-flex'>
+                                        <AvatarImage src={host.photo_url} />
+                                        <AvatarFallback>{host.first_name?.[0]}{host.last_name?.[0]}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="mx-3">
+                                        <p>{host.first_name}</p>
+                                        <p className="font-light">Host</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </CardContent>
+                    <CardFooter className="mt-auto p-4 pt-0">
+                        {isHost ? (
+                            <span className="text-blue-600 font-medium">You're hosting ✓</span>
+                        ) : hasJoined ? (
+                            <span className="text-green-600 font-medium">Joined ✓</span>
+                        ) : !isJoinedPage ? (
+                            <Button className={primaryButtonStyles} onClick={() => onJoin && onJoin(id)}>
+                                Join
+                            </Button>
+                        ) : (
+                            <>
+                                <Button className={secondaryButtonStyles} onClick={() => onMessage && onMessage(id)}>
+                                    Message
+                                </Button>
+                                {!is_host && (
+                                    <Button className={dangerButtonStyles} onClick={() => onLeave && onLeave(id)}>
+                                        Leave
+                                    </Button>
+                                )}
+                            </>
+                        )}
+                    </CardFooter>
+                </div>
+            </div>
         </Card>
     )
 }

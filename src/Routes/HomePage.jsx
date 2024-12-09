@@ -5,7 +5,9 @@ import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { EventCard } from "@/components/EventCard"
-import { fetchMealEvents, joinMealEvent, fetchDiningHalls } from "@/api/api"
+import { fetchMealEvents, joinMealEvent, fetchDiningHalls, getUserEvents } from "@/api/api"
+
+const ITEMS_PER_PAGE = 5;
 
 export function HomePage() {
     const [events, setEvents] = useState([]);
@@ -13,19 +15,26 @@ export function HomePage() {
     const [error, setError] = useState(null);
     const [diningHalls, setDiningHalls] = useState([]);
     const [selectedHalls, setSelectedHalls] = useState(new Set());
-    const [sortOrder, setSortOrder] = useState('newest'); // 'newest' or 'oldest'
+    const [sortOrder, setSortOrder] = useState('newest');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [userEvents, setUserEvents] = useState(new Set());
     const userId = 1;
 
     useEffect(() => {
         async function loadInitialData() {
             try {
                 setLoading(true);
-                const [eventsData, hallsData] = await Promise.all([
+                const [eventsData, hallsData, userEventsData] = await Promise.all([
                     fetchMealEvents(),
-                    fetchDiningHalls()
+                    fetchDiningHalls(),
+                    getUserEvents(userId)
                 ]);
+                
+                const userEventIds = new Set(userEventsData.map(event => event.id));
+                
                 setEvents(eventsData);
                 setDiningHalls(hallsData);
+                setUserEvents(userEventIds);
             } catch (e) {
                 setError(e.message);
             } finally {
@@ -44,6 +53,7 @@ export function HomePage() {
                 }
                 return ev;
             }));
+            setUserEvents(prev => new Set([...prev, eventId]));
         } catch (e) {
             console.error(e);
             alert("Failed to join event: " + e.message);
@@ -60,6 +70,7 @@ export function HomePage() {
             }
             return newSet;
         });
+        setCurrentPage(1); // Reset to first page when filtering
     };
 
     const handleSort = (order) => {
@@ -69,10 +80,17 @@ export function HomePage() {
             const dateB = new Date(b.event_time);
             return order === 'newest' ? dateB - dateA : dateA - dateB;
         }));
+        setCurrentPage(1); // Reset to first page when sorting
     };
 
     const filteredEvents = events.filter(event => 
         selectedHalls.size === 0 || selectedHalls.has(event.dining_hall.id)
+    );
+
+    const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
+    const paginatedEvents = filteredEvents.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
     );
 
     return (
@@ -132,12 +150,28 @@ export function HomePage() {
 
                     {loading && <p>Loading events...</p>}
                     {error && <p className="text-red-500">Error: {error}</p>}
-                    {!loading && !error && filteredEvents.map((ev) => (
-                        <EventCard key={ev.id} eventData={ev} onJoin={handleJoin} isJoinedPage={false}/>
+                    {!loading && !error && paginatedEvents.map((ev) => (
+                        <EventCard 
+                            key={ev.id} 
+                            eventData={ev} 
+                            onJoin={handleJoin} 
+                            isJoinedPage={false}
+                            hasJoined={userEvents.has(ev.id)}
+                            isHost={ev.host?.id === userId}
+                        />
                     ))}
+                    
+                    {totalPages > 1 && (
+                        <div className="mt-4">
+                            <MealsharePagination 
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
-            <MealsharePagination/>
             <Footer/>
         </>
     )
