@@ -35,14 +35,19 @@ export function ManageEvent() {
         setShowMessageModal(true);
     }
 
-    async function handleLeave(eventId) {
-        if (!window.confirm('Are you sure you want to leave this event?')) {
+    async function handleLeave(eventId, isHost) {
+        const action = isHost ? 'dissolve' : 'leave';
+        const confirmMessage = isHost 
+            ? 'Are you sure you want to dissolve this event? This will remove all participants and messages.'
+            : 'Are you sure you want to leave this event?';
+
+        if (!window.confirm(confirmMessage)) {
             return;
         }
         
         try {
             await leaveMealEvent(eventId, userId);
-            window.alert('You have left the event successfully.');
+            window.alert(`Successfully ${action}d the event.`);
             // Refresh events list
             await loadEvents();
         } catch (error) {
@@ -64,7 +69,8 @@ export function ManageEvent() {
                         eventData={ev} 
                         isJoinedPage={true} 
                         onMessage={handleMessage}
-                        onLeave={handleLeave}
+                        onLeave={() => handleLeave(ev.id, ev.is_host)}
+                        isHost={ev.is_host}
                     />
                 ))}
             </div>
@@ -72,7 +78,8 @@ export function ManageEvent() {
                 eventId={currentEventId} 
                 senderId={userId} 
                 open={showMessageModal} 
-                onClose={() => setShowMessageModal(false)} />
+                onClose={() => setShowMessageModal(false)} 
+            />
             <Footer/>
         </>
     )

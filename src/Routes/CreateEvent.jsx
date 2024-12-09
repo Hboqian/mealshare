@@ -4,9 +4,9 @@ import { Header, Footer } from "../components"
 import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { createMealEvent } from "@/api/api"
-import { Card } from "@/components/ui/card"
+import { Card, DatePicker, TimePicker, InputNumber } from 'antd';
+import { ClockCircleOutlined, EnvironmentOutlined, TeamOutlined } from '@ant-design/icons';
 import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
 
 // Hardcoded Dining Halls list (IDs should match backend database)
 // Can be fetched from backend, but hardcoded for demo
@@ -59,53 +59,109 @@ export function CreateEvent(){
     }
 
     return(
-        <>
-            <Header/>
-            <Separator/>
-            <div className="mx-10 my-10">
-                <h1 className="text-2xl mb-5">Create Event</h1>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="flex space-x-4 items-center">
-                        <div>
-                            <label className="block mb-1 font-semibold">Event Date</label>
-                            <Input type="date" value={date} onChange={(e)=>setDate(e.target.value)} required />
-                        </div>
-                        <div>
-                            <label className="block mb-1 font-semibold">Event Time</label>
-                            <Input type="time" value={time} onChange={(e)=>setTime(e.target.value)} required/>
-                        </div>
-                        <div className="flex items-center mt-6">
-                            <Checkbox checked={eatTogether} onCheckedChange={val=>setEatTogether(val===true)} id="eat_together"/>
-                            <label htmlFor="eat_together" className="pl-2 text-sm font-medium text-black leading-none">Eat Together 🍽</label>
-                        </div>
-                    </div>
+        <div className="min-h-screen bg-gray-50">
+            <Header />
+            <Separator className="mb-0" />
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <Card className="shadow-sm">
+                    <h1 className="text-2xl font-semibold mb-6">Create Meal Sharing Event</h1>
                     
-                    <div>
-                        <label className="block mb-2 font-semibold">Location</label>
-                        <div className="flex space-x-4 overflow-auto">
-                            {DINING_HALLS.map(hall=>(
-                                <Card key={hall.id} 
-                                      className={`p-4 cursor-pointer border ${selectedHall?.id===hall.id ? 'border-blue-500' : 'border-gray-300'}`} 
-                                      onClick={()=>setSelectedHall(hall)}>
-                                    <p className="font-bold">{hall.name}</p>
-                                    <p className="text-sm">{hall.address}</p>
-                                </Card>
-                            ))}
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Date and Time Section */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Event Date</label>
+                                <DatePicker
+                                    className="w-full"
+                                    size="large"
+                                    onChange={(date) => setDate(date)}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-2">Event Time</label>
+                                <TimePicker
+                                    className="w-full"
+                                    size="large"
+                                    format="HH:mm"
+                                    onChange={(time) => setTime(time)}
+                                    required
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="flex items-center space-x-4">
-                        <Button type="button" onClick={()=>setSpotsTotal(sp=>Math.max(1, sp-1))}>-</Button>
-                        <p>{spotsTotal} Meal Swipe Offered</p>
-                        <Button type="button" onClick={()=>setSpotsTotal(sp=>sp+1)}>+</Button>
-                    </div>
-                    
-                    <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">Create Event</Button>
-                    {message && <p className="mt-4 text-sm">{message}</p>}
-                </form>
+                        {/* Dining Hall Selection */}
+                        <div>
+                            <label className="block text-sm font-medium mb-2">
+                                <EnvironmentOutlined className="mr-2" />
+                                Select Dining Hall
+                            </label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {DINING_HALLS.map(hall => (
+                                    <Card
+                                        key={hall.id}
+                                        className={`cursor-pointer transition-all ${
+                                            selectedHall?.id === hall.id 
+                                                ? 'border-blue-500 shadow-md' 
+                                                : 'border-gray-200 hover:border-blue-300'
+                                        }`}
+                                        onClick={() => setSelectedHall(hall)}
+                                    >
+                                        <h3 className="font-medium">{hall.name}</h3>
+                                        <p className="text-sm text-gray-500">{hall.address}</p>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Spots and Options */}
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium mb-2">
+                                    <TeamOutlined className="mr-2" />
+                                    Number of Meal Swipes
+                                </label>
+                                <InputNumber
+                                    min={1}
+                                    value={spotsTotal}
+                                    onChange={(value) => setSpotsTotal(value)}
+                                    className="w-32"
+                                    size="large"
+                                />
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    checked={eatTogether}
+                                    onChange={(e) => setEatTogether(e.target.checked)}
+                                    id="eat_together"
+                                />
+                                <label htmlFor="eat_together" className="text-sm">
+                                    Eat together with participants
+                                </label>
+                            </div>
+                        </div>
+
+                        {message && (
+                            <div className={`p-4 rounded-lg ${
+                                message.includes('Error') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'
+                            }`}>
+                                {message}
+                            </div>
+                        )}
+
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            size="large"
+                            className="w-full bg-blue-600 hover:bg-blue-700"
+                        >
+                            Create Event
+                        </Button>
+                    </form>
+                </Card>
             </div>
-            <Footer/>
-        </>
-        
+            <Footer />
+        </div>
     )
 }

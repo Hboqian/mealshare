@@ -51,7 +51,11 @@ export function MessageModal({ eventId, senderId, open, onClose }) {
                     ))}
                 </div>
                 <DialogFooter className="flex space-x-2">
-                    <Input value={content} onChange={(e)=>setContent(e.target.value)} placeholder="Type a message..." />
+                    <Input 
+                        value={content} 
+                        onChange={(e)=>setContent(e.target.value)} 
+                        placeholder="Type a message..." 
+                    />
                     <Button onClick={handleSend}>Send</Button>
                 </DialogFooter>
             </DialogContent>

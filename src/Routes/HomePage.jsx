@@ -116,36 +116,36 @@ export function HomePage() {
                     </div>
                 </div>
                 <div className="col-span-2">
-                    <div className="flex mb-5">
-                        <form className="mr-5 grow">
+                    <div className="flex mb-5 items-center gap-4">
+                        <form className="flex-1">
                             <div className="relative w-full">
                                 <input 
                                     type="search" 
-                                    className="p-2.5 text-sm text-gray-900 bg-white rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500" 
-                                    placeholder="Search by host" required 
+                                    className="w-full p-2.5 text-sm text-gray-900 bg-white rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500" 
+                                    placeholder="Search by host" 
+                                    required 
                                 />
-                                <button type="submit" className="absolute top-0 right-0 p-2.5 text-white bg-blue-600 hover:bg-blue-700 rounded-r-md">
+                                <button type="submit" className="absolute right-0 top-0 h-full px-4 text-white bg-blue-600 hover:bg-blue-700 rounded-r-md">
                                     <svg className="w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 20 20">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                     </svg>
-                                    <span className="sr-only">Search</span>
                                 </button>
                             </div>
                         </form>
-                        <Button 
-                            className={`mx-2 w-22 h-8 my-auto ${sortOrder === 'newest' ? 'bg-blue-600' : ''}`}
-                            onClick={() => handleSort('newest')} 
-                            size="sm"
-                        >
-                            Newest
-                        </Button>
-                        <Button 
-                            className={`mx-1 w-22 h-8 my-auto ${sortOrder === 'oldest' ? 'bg-blue-600' : ''}`}
-                            onClick={() => handleSort('oldest')} 
-                            size="sm"
-                        >
-                            Oldest
-                        </Button>
+                        <div className="flex gap-2">
+                            <Button 
+                                className={`h-10 px-4 ${sortOrder === 'newest' ? 'bg-blue-600 text-white' : 'bg-white'}`}
+                                onClick={() => handleSort('newest')} 
+                            >
+                                Newest
+                            </Button>
+                            <Button 
+                                className={`h-10 px-4 ${sortOrder === 'oldest' ? 'bg-blue-600 text-white' : 'bg-white'}`}
+                                onClick={() => handleSort('oldest')} 
+                            >
+                                Oldest
+                            </Button>
+                        </div>
                     </div>
 
                     {loading && <p>Loading events...</p>}

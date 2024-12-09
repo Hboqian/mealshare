@@ -52,23 +52,25 @@ export function EventCard({ eventData, onJoin, onMessage, onLeave, isJoinedPage=
                             )}
                         </div>
                     </CardContent>
-                    <CardFooter className="mt-auto p-4 pt-0">
-                        {isHost ? (
-                            <span className="text-blue-600 font-medium">You're hosting ✓</span>
-                        ) : hasJoined ? (
-                            <span className="text-green-600 font-medium">Joined ✓</span>
-                        ) : !isJoinedPage ? (
-                            <Button className={primaryButtonStyles} onClick={() => onJoin && onJoin(id)}>
-                                Join
-                            </Button>
-                        ) : (
+                    <CardFooter className="mt-auto p-4 pt-0 flex gap-2">
+                        {isJoinedPage ? (
                             <>
                                 <Button className={secondaryButtonStyles} onClick={() => onMessage && onMessage(id)}>
                                     Message
                                 </Button>
-                                {!is_host && (
-                                    <Button className={dangerButtonStyles} onClick={() => onLeave && onLeave(id)}>
-                                        Leave
+                                <Button className={dangerButtonStyles} onClick={() => onLeave && onLeave(id)}>
+                                    {isHost ? 'Dissolve Event' : 'Leave'}
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                {isHost ? (
+                                    <span className="text-blue-600 font-medium">You're hosting ✓</span>
+                                ) : hasJoined ? (
+                                    <span className="text-green-600 font-medium">Joined ✓</span>
+                                ) : (
+                                    <Button className={primaryButtonStyles} onClick={() => onJoin && onJoin(id)}>
+                                        Join
                                     </Button>
                                 )}
                             </>
