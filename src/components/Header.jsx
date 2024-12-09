@@ -1,40 +1,42 @@
+// src/components/Header.jsx
 'use client'
 import {
     NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuIndicator,
+    NavigationMenuList,
     NavigationMenuItem,
     NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    NavigationMenuViewport,
-    navigationMenuTriggerStyle
-  } from "@/components/ui/navigation-menu"
-  import { Link } from "react-router-dom"
-  import mealshare_logo from '../assets/mealshare_logo.png'
+} from "@/components/ui/navigation-menu"
+import mealshare_logo from '../assets/mealshare_logo.png'
+import { Link } from "react-router-dom"
 
-  export function Header(){
-
+export function Header(){
     return(
-        <div className="flex">
-            <img src={mealshare_logo} alt="logo" width="400px"/>
+        <div className="flex items-center justify-between px-10 py-4">
+            <img src={mealshare_logo} alt="logo" width="200px"/>
             <NavigationMenu>
-                <NavigationMenuList>
+                <NavigationMenuList className="flex space-x-8">
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>Home</NavigationMenuTrigger>
+                        <NavigationMenuLink asChild>
+                            <Link to="/" className="hover:underline">Home</Link>
+                        </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>Create Event</NavigationMenuTrigger>
+                        <NavigationMenuLink asChild>
+                            <Link to="/create-event" className="hover:underline">Create Event</Link>
+                        </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>Manage Event</NavigationMenuTrigger>
+                        <NavigationMenuLink asChild>
+                            <Link to="/manage-event" className="hover:underline">Manage Event</Link>
+                        </NavigationMenuLink>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>Profile</NavigationMenuTrigger>
+                        <NavigationMenuLink asChild>
+                            <Link to="/profile" className="hover:underline">Profile</Link>
+                        </NavigationMenuLink>
                     </NavigationMenuItem>
                 </NavigationMenuList>
             </NavigationMenu>
         </div>
-        
     )
-  }
+}

@@ -1,3 +1,5 @@
 export * from './MealsharePagination'
 export * from './Header'
 export * from './Footer'
+export * from './EventCard'
+export * from './MessageModal'
