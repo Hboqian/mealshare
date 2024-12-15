@@ -1,2 +1,5 @@
 export * from './HomePage'
 export * from './CreateEvent'
+export * from './ManageEvent'
+export * from './LoginPage'
+export * from './SignupPage'

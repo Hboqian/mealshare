@@ -3,9 +3,13 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { HomePage } from "./Routes/HomePage"
-import { CreateEvent } from "./Routes/CreateEvent"
-import { ManageEvent } from "./Routes/ManageEvent"
+import { 
+  HomePage, 
+  CreateEvent,
+  ManageEvent,
+  LoginPage,
+  SignupPage
+} from "./Routes"
 
 const router = createBrowserRouter([
   {
@@ -19,6 +23,14 @@ const router = createBrowserRouter([
   {
     path: "/manage-event",
     element: <ManageEvent/>,
+  },
+  {
+    path: "/signup",
+    element: <SignupPage/>,
+  },
+  {
+    path: "/login",
+    element: <LoginPage/>
   },
   {
     path: "/profile",

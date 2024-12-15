@@ -8,6 +8,7 @@ import { EventCard } from "@/components/EventCard"
 import { fetchMealEvents, joinMealEvent, fetchDiningHalls, getUserEvents } from "@/api/api"
 import { Calendar, Slider } from 'antd';
 import dayjs from 'dayjs';
+import eat_together from '../assets/eat_together.png'
 
 const ITEMS_PER_PAGE = 5;
 
@@ -25,6 +26,7 @@ export function HomePage() {
     const [dateRange, setDateRange] = useState([null, null]);
     const [timeRange, setTimeRange] = useState([0, 24]);
     const [isSelectingEndDate, setIsSelectingEndDate] = useState(false);
+    const [eatTogether, setEatTogether] = useState(true);
 
     useEffect(() => {
         async function loadInitialData() {
@@ -103,6 +105,11 @@ export function HomePage() {
         }
     };
 
+    const handleEatTogether = (checked) => {
+        setEatTogether(!checked)
+        setCurrentPage(1)
+    }
+
     const filteredEvents = events.filter(event => {
         const hallFilter = selectedHalls.size === 0 || selectedHalls.has(event.dining_hall.id);
         
@@ -117,8 +124,10 @@ export function HomePage() {
         
         const eventHour = eventDate.hour();
         const timeFilter = eventHour >= timeRange[0] && eventHour <= timeRange[1];
+
+        const togetherFilter = event.eat_together === eatTogether
         
-        return hallFilter && spotsTotalFilter && dateFilter && timeFilter;
+        return hallFilter && spotsTotalFilter && dateFilter && timeFilter && togetherFilter;
     });
 
     const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
@@ -269,6 +278,17 @@ export function HomePage() {
                                 </div>
                             </div>
                         </div>
+                        
+                        {/* <div key='eat_together' className='flex items-center space-x-2 my-1'>
+                                <Checkbox 
+                                    id='eat_together_checkbox'
+                                    checked={eatTogether}
+                                    onCheckedChange={() => handleEatTogether(eatTogether)}
+                                />
+                                <div className="pl-2">
+                                    <img className={eatTogether ? "border-b-4 dark:border-blue-900" : ""} src={eat_together} width="50"/>
+                                </div>
+                        </div> */}
 
                         <Button
                             onClick={() => {
@@ -304,17 +324,20 @@ export function HomePage() {
                         </form>
                         <div className="flex gap-2">
                             <Button 
-                                className={`h-10 px-4 ${sortOrder === 'newest' ? 'bg-blue-600 text-white' : 'bg-white'}`}
+                                className={`h-10 px-4 ${sortOrder === 'newest' ? 'dark:bg-blue-600 dark:text-black' : 'dark:bg-white dark:text-black'}`}
                                 onClick={() => handleSort('newest')} 
                             >
                                 Newest
                             </Button>
                             <Button 
-                                className={`h-10 px-4 ${sortOrder === 'oldest' ? 'bg-blue-600 text-white' : 'bg-white'}`}
+                                className={`h-10 px-4 ${sortOrder === 'oldest' ? 'dark:bg-blue-600 dark:text-black' : 'dark:bg-white dark:text-black'}`}
                                 onClick={() => handleSort('oldest')} 
                             >
                                 Oldest
                             </Button>
+                            <img className={eatTogether ? "h-10 border-b-4 dark:border-blue-900 px-[0.2rem]" : "h-10"} src={eat_together} onClick={() => handleEatTogether(eatTogether)}/>
+
+                            
                         </div>
                     </div>
 
