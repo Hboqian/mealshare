@@ -18,7 +18,7 @@ export function HomePage() {
     const [error, setError] = useState(null);
     const [diningHalls, setDiningHalls] = useState([]);
     const [selectedHalls, setSelectedHalls] = useState(new Set());
-    const [sortOrder, setSortOrder] = useState('newest');
+    const [sortOrder, setSortOrder] = useState('oldest');
     const [currentPage, setCurrentPage] = useState(1);
     const [userEvents, setUserEvents] = useState(new Set());
     const userId = 1;
