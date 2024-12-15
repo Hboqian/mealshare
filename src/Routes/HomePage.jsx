@@ -324,13 +324,13 @@ export function HomePage() {
                         </form>
                         <div className="flex gap-2">
                             <Button 
-                                className={`h-10 px-4 ${sortOrder === 'newest' ? 'dark:bg-blue-600 dark:text-black' : 'dark:bg-white dark:text-black'}`}
+                                className={`h-10 px-4 ${sortOrder === 'newest' ? 'bg-blue-600 text-black dark:bg-blue-600 dark:text-black' : 'bg-white text-black dark:bg-white dark:text-black'}`}
                                 onClick={() => handleSort('newest')} 
                             >
                                 Newest
                             </Button>
                             <Button 
-                                className={`h-10 px-4 ${sortOrder === 'oldest' ? 'dark:bg-blue-600 dark:text-black' : 'dark:bg-white dark:text-black'}`}
+                                className={`h-10 px-4 ${sortOrder === 'oldest' ? 'bg-blue-600 text-black dark:bg-blue-600 dark:text-black' : 'bg-white text-black dark:bg-white dark:text-black'}`}
                                 onClick={() => handleSort('oldest')} 
                             >
                                 Oldest
